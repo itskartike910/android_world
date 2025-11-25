@@ -113,9 +113,9 @@ def download_and_install_apk(
     apk: str, raw_env: env_interface.AndroidEnvInterface
 ) -> None:
   """Downloads APK from remote location and installs it."""
-  if apk == "WootzApp.apk":
-    # Use custom GitHub download for Wootzapp
-    path = apps.download_wootzapp_from_github()
+  if apk.startswith("WootzApp"):
+    # Use custom GitHub download for Wootzapp (supports architecture-specific APKs)
+    path = apps.download_wootzapp_from_github(apk)
   else:
     # Use standard GCS download for other apps
     path = apps.download_app_data(apk)

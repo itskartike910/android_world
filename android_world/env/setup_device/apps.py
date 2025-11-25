@@ -62,18 +62,24 @@ def download_app_data(file_name: str) -> str:
   return full_path
 
 
-def download_wootzapp_from_github() -> str:
-  """Downloads Wootzapp APK from GitHub releases."""
+def download_wootzapp_from_github(apk_name: str = "WootzApp.apk") -> str:
+  """Downloads Wootzapp APK from GitHub releases.
+  Args:
+    apk_name: The name of the APK to download.
+  Returns:
+    The path to the downloaded APK.
+  """
   cache_dir = file_utils.convert_to_posix_path(
       file_utils.get_local_tmp_directory(), "android_world", "app_data"
   )
-  # GitHub release URL for Wootzapp v1.09
-  remote_url = "https://github.com/devjangid15/wootz-browser/releases/download/Offline-pages/WootzApp.apk"
-  full_path = file_utils.convert_to_posix_path(cache_dir, "WootzApp.apk")
+  # Support architecture-specific APKs
+  base_url = "https://github.com/devjangid15/wootz-browser/releases/download/Offline-pages/"
+  remote_url = f"{base_url}{apk_name}"
+  full_path = file_utils.convert_to_posix_path(cache_dir, apk_name)
   os.makedirs(cache_dir, exist_ok=True)
   
   if not os.path.isfile(full_path):
-    logging.info("Downloading Wootzapp APK from GitHub to cache %s", cache_dir)
+    logging.info("Downloading Wootzapp APK (%s) from GitHub to cache %s", apk_name, cache_dir)
     response = requests.get(remote_url)
     if response.status_code == 200:
       with open(full_path, "wb") as file:
@@ -84,7 +90,7 @@ def download_wootzapp_from_github() -> str:
           f" {response.status_code}"
       )
   else:
-    logging.info("Wootzapp APK already exists in cache %s", cache_dir)
+    logging.info("Wootzapp APK (%s) already exists in cache %s", apk_name, cache_dir)
   return full_path
 
 class AppSetup(abc.ABC):
@@ -795,7 +801,11 @@ class RetroMusicApp(AppSetup):
 class WootzAppApp(AppSetup):
   """Class for setting up WootzApp browser."""
   
-  apk_names = ("WootzApp.apk",)
+  apk_names = (
+      "WootzApp-arm64.apk",  # ARM64 architecture (for ARM64 emulators)
+      "WootzApp-x86_64.apk",  # x86_64 architecture (for x86_64 emulators)
+      "WootzApp.apk",  # Fallback universal APK
+  )
   app_name = "WootzApp"
   
   @classmethod
