@@ -29,7 +29,7 @@ from android_world.utils import file_utils
 class BrowserTask(task_eval.TaskEval):
   """Base class for browser tasks."""
 
-  app_names = ['wootzapp']
+  app_names = ['chrome']
   complexity = 2
   schema = {
       'type': 'object',
@@ -43,7 +43,7 @@ class BrowserTask(task_eval.TaskEval):
 
   preamble = (
       'Open the file task.html in Downloads in the file manager; when prompted'
-      ' open it with Wootzapp.'
+      ' open it with Chrome.'
   )
 
   def initialize_device_time(self, env: interface.AsyncEnv) -> None:
@@ -57,7 +57,7 @@ class BrowserTask(task_eval.TaskEval):
     super().initialize_task(env)
     user_data_generation.clear_device_storage(env)
     chrome_activity = adb_utils.extract_package_name(
-        adb_utils.get_adb_activity('wootzapp')
+        adb_utils.get_adb_activity('chrome')
     )
 
     adb_utils.clear_app_data(
@@ -88,7 +88,7 @@ class BrowserTask(task_eval.TaskEval):
     super().tear_down(env)
     user_data_generation.clear_device_storage(env)
     adb_utils.clear_app_data(
-        adb_utils.extract_package_name(adb_utils.get_adb_activity('wootzapp')),
+        adb_utils.extract_package_name(adb_utils.get_adb_activity('chrome')),
         env.controller,
     )
     datetime_utils.toggle_auto_settings(
@@ -100,7 +100,7 @@ class BrowserTask(task_eval.TaskEval):
     package_name = adb_utils.extract_package_name(
         adb_utils.get_current_activity(env.controller)[0]
     )
-    if package_name != 'org.chromium.chrome':
+    if package_name != 'com.android.chrome':
       return 0.0
 
     for element in state.ui_elements:
